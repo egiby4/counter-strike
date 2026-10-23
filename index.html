@@ -16,7 +16,10 @@
 <div class="bottom"><div class="vitals"><div class="cross">✚</div><div><small>VITALS</small><b id="health">100</b><div class="bar"><i id="healthbar"></i></div></div></div><div class="help"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> MOVE　 <kbd>MOUSE</kbd> AIM<br><kbd>CLICK</kbd> FIRE　 <kbd>R</kbd> RELOAD　 <kbd>SHIFT</kbd> SPRINT　 <kbd>ESC</kbd> PAUSE</div><div class="minimap"><canvas id="map" width="112" height="112"></canvas></div></div>
 <div class="overlay" id="overlay"><section class="panel"><div class="eyebrow">FIRST-PERSON TACTICAL SHOOTER</div><h1>DUST<br><span>OPS. 3D</span></h1><p>Step into a fully 3D arena. Take aim from a first-person view, use cover, and fight hostile operators across escalating rounds. Built as an original browser game inspired by classic tactical shooters.</p><div class="features"><span>◈ REAL 3D FIRST-PERSON VIEW</span><span>◈ MOUSE-LOOK / POINTER LOCK</span><span>◈ 3D BOT ENEMIES</span><span>◈ RAYCAST SHOOTING</span></div><button class="btn" id="start">DEPLOY TO THE SITE　→</button><p class="foot">WASD MOVE · MOUSE LOOK · LEFT CLICK FIRE · R RELOAD · ESC RELEASE CURSOR</p><p class="foot">Three.js is loaded from a public CDN. Internet access is required.</p></section></div>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+try {
+const probe=document.createElement('canvas');
+if(!probe.getContext('webgl2')&&!probe.getContext('webgl')) throw new Error('WEBGL_UNAVAILABLE');
+const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
 (()=>{
 const $=id=>document.getElementById(id),canvas=$('game'),map=$('map'),mctx=map.getContext('2d');
 let renderer,scene,camera,clock,playing=false,paused=false,round=1,kills=0,health=100,ammo=30,reserve=90,reloadT=0,fireT=0,elapsed=0,toastT=0,hitT=0,damageT=0, bots=[],bullets=[],walls=[],keys={},mouseDown=false,locked=false,gameReady=false;
@@ -71,4 +74,11 @@ $('start').onclick=()=>{if(!playing)reset();else{paused=false;canvas.requestPoin
 addEventListener('resize',()=>{if(!renderer)return;camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 try{init()}catch(e){console.error(e);$('overlay').classList.remove('hidden');$('overlay').innerHTML='<section class="panel"><div class="eyebrow">3D ENGINE ERROR</div><h1>RENDER<br><span>FAILED.</span></h1><p>3D graphics could not be initialized. Check your internet connection and use a browser with WebGL support.</p><button class="btn" onclick="location.reload()">RETRY</button></section>'}
 })();
+} catch(e) {
+ console.error('Dust Ops 3D startup error:',e);
+ const overlay=document.getElementById('overlay');
+ overlay.classList.remove('hidden');
+ const noWebGL=e&&e.message==='WEBGL_UNAVAILABLE';
+ overlay.innerHTML='<section class="panel"><div class="eyebrow">3D ENGINE CHECK</div><h1>'+(noWebGL?'WEBGL <span>UNAVAILABLE.</span>':'LOAD <span>FAILED.</span>')+'</h1><p>'+(noWebGL?'이 브라우저 또는 그래픽 설정에서 WebGL이 비활성화되어 있어 3D 화면을 만들 수 없습니다. Chrome 또는 Edge를 최신 버전으로 업데이트하고, 브라우저 설정에서 하드웨어 가속을 켠 뒤 다시 실행해 주세요. 원격 데스크톱이나 오래된 그래픽 드라이버도 원인일 수 있습니다.':'Three.js를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요. CDN 연결이 차단된 네트워크에서도 발생할 수 있습니다.')+'</p><div class="features"><span>CHROME / EDGE</span><span>WEBGL ENABLED</span><span>INTERNET REQUIRED</span></div><button class="btn" onclick="location.reload()">RETRY　→</button></section>';
+}
 </script></body></html>
