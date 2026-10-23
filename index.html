@@ -24,7 +24,7 @@ const ARENA=42, player={pos:new THREE.Vector3(-14,0,0),yaw:0,pitch:0,speed:6.5},
 function mat(color,rough=.85,metal=0){return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal})}
 function box(x,y,z,sx,sy,sz,material,collide=true){const o=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),material);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);if(collide)walls.push({x,z,hx:sx/2,hz:sz/2,mesh:o});return o}
 function buildWorld(){
-scene=new THREE.Scene();scene.background=new THREE.Color('#a6a38e');scene.fog=new THREE.Fog('#a6a38e',26,68);
+walls=[];scene=new THREE.Scene();scene.background=new THREE.Color('#a6a38e');scene.fog=new THREE.Fog('#a6a38e',26,68);
 scene.add(new THREE.HemisphereLight(0xe2e8d5,0x534a37,2.1));
 const sun=new THREE.DirectionalLight(0xffe1b0,3.1);sun.position.set(-12,25,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=35;sun.shadow.camera.bottom=-35;scene.add(sun);
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(100,100),mat('#77745d'));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
